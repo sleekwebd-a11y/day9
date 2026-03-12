@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>ARC • Your Life as a Series</title>
+  <title>Unsent • Send it to the void</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
@@ -12,61 +12,53 @@
 
 <div class="max-w-[420px] mx-auto min-h-screen bg-neutral-950 flex flex-col shadow-2xl">
 
-  <!-- NETFLIX-STYLE HEADER -->
-  <header class="bg-black px-6 py-6 flex items-center justify-between border-b border-red-600">
-    <div class="flex items-center gap-3">
-      <div class="w-8 h-8 bg-red-600 rounded flex items-center justify-center text-white font-bold text-xl">A</div>
-      <h1 class="text-4xl font-bold tracking-tighter" style="font-family: 'Playfair Display', serif;">ARC</h1>
-    </div>
-    <p class="text-xs text-red-400 tracking-widest">SEASON 2026</p>
+  <!-- HEADER -->
+  <header class="bg-black px-6 py-8 text-center border-b border-rose-600">
+    <h1 class="text-5xl font-bold tracking-tighter" style="font-family: 'Playfair Display', serif;">unsent</h1>
+    <p class="text-rose-400 text-xs tracking-[4px]">the texts you never sent</p>
   </header>
 
-  <!-- MAIN CONTENT -->
-  <main class="flex-1 overflow-y-auto px-5 py-6">
+  <!-- MAIN -->
+  <main class="flex-1 px-5 py-6 overflow-y-auto">
 
-    <!-- TODAY SCENE -->
-    <div id="tab-today" class="tab-content">
-      <div class="bg-neutral-900 rounded-3xl p-6 mb-8">
-        <p class="text-xs text-neutral-400 mb-1">EPISODE <span id="episode-number" class="text-red-400">47</span></p>
-        <textarea id="scene-input" rows="4" class="w-full bg-neutral-800 rounded-2xl p-5 text-lg outline-none" placeholder="What happened today... (the scene)"></textarea>
-        
-        <p class="text-xs text-neutral-400 mt-6 mb-3">CURRENT ARC</p>
-        <div id="arc-picker" class="grid grid-cols-3 gap-3"></div>
-      </div>
+    <!-- COMPOSE -->
+    <div id="compose" class="tab-content">
+      <select id="recipient" class="w-full bg-neutral-900 border border-neutral-700 rounded-2xl px-5 py-4 text-lg outline-none">
+        <option value="">Who is this for?</option>
+        <option>Ex</option>
+        <option>Crush</option>
+        <option>Boss</option>
+        <option>Mom</option>
+        <option>Future Self</option>
+        <option>That One Friend</option>
+        <option>Everyone</option>
+      </select>
 
-      <button onclick="saveScene()" class="w-full py-6 bg-red-600 hover:bg-red-500 rounded-3xl text-xl font-bold">LOG THIS SCENE</button>
+      <textarea id="message" rows="7" class="mt-6 w-full bg-neutral-900 border border-neutral-700 rounded-3xl p-6 text-lg outline-none" placeholder="Type the text you wish you sent..."></textarea>
+
+      <button onclick="sendToVoid()" class="mt-8 w-full py-6 bg-gradient-to-r from-rose-600 to-purple-600 rounded-3xl text-xl font-bold">SEND TO THE VOID</button>
     </div>
 
-    <!-- MY ARCS -->
-    <div id="tab-arcs" class="tab-content hidden">
-      <h2 class="text-xl font-semibold mb-6">Your Story Arcs</h2>
-      <div id="arc-list" class="space-y-4"></div>
+    <!-- ARCHIVE -->
+    <div id="archive" class="tab-content hidden">
+      <div id="archive-list" class="space-y-4"></div>
     </div>
 
-    <!-- SEASON RECAP -->
-    <div id="tab-recap" class="tab-content hidden">
+    <!-- RECAP -->
+    <div id="recap" class="tab-content hidden">
       <div class="bg-neutral-900 rounded-3xl p-8 text-center">
-        <p class="text-red-400 text-sm tracking-widest mb-2">PREVIOUSLY ON ARC</p>
-        <h3 class="text-3xl font-bold" style="font-family: 'Playfair Display', serif;">Season Recap</h3>
-        <div id="recap-content" class="mt-8 space-y-6 text-left"></div>
+        <h2 class="text-3xl font-bold mb-8">This Month's Unsent Energy</h2>
+        <div id="recap-stats" class="space-y-6"></div>
       </div>
     </div>
 
   </main>
 
   <!-- BOTTOM NAV -->
-  <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 max-w-[420px] w-full bg-black border-t border-red-900/50 py-4">
-    <div class="flex justify-around text-xs">
-      <div onclick="switchTab(0)" class="nav-item flex flex-col items-center text-red-400">
-        📽️<br><span class="mt-1">TODAY</span>
-      </div>
-      <div onclick="switchTab(1)" class="nav-item flex flex-col items-center">
-        📖<br><span class="mt-1">ARCS</span>
-      </div>
-      <div onclick="switchTab(2)" class="nav-item flex flex-col items-center">
-        🎬<br><span class="mt-1">RECAP</span>
-      </div>
-    </div>
+  <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 max-w-[420px] w-full bg-black border-t border-rose-900 py-4 flex justify-around text-xs">
+    <div onclick="switchTab(0)" class="nav-item text-rose-400">✍️<br>Write</div>
+    <div onclick="switchTab(1)" class="nav-item">📜<br>Archive</div>
+    <div onclick="switchTab(2)" class="nav-item">📊<br>Recap</div>
   </nav>
 
 </div>
