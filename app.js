@@ -1,99 +1,86 @@
-let scenes = [];
-const arcTypes = [
-  {name:"Glow Up", emoji:"🌟", color:"#22c55e"},
-  {name:"Plot Twist", emoji:"🌀", color:"#eab308"},
-  {name:"Healing Arc", emoji:"🩹", color:"#06b67f"},
-  {name:"Chaos Season", emoji:"🔥", color:"#ef4444"},
-  {name:"Main Character", emoji:"👑", color:"#a855f7"},
-  {name:"Slow Burn", emoji:"⏳", color:"#64748b"}
-];
-
-let currentArc = arcTypes[0];
+let messages = [];
 
 function loadData() {
-  const saved = localStorage.getItem('arc_scenes');
-  if (saved) scenes = JSON.parse(saved);
+  const saved = localStorage.getItem('unsent_messages');
+  if (saved) messages = JSON.parse(saved);
 }
 
 function saveData() {
-  localStorage.setItem('arc_scenes', JSON.stringify(scenes));
+  localStorage.setItem('unsent_messages', JSON.stringify(messages));
 }
 
-function renderArcPicker() {
-  const container = document.getElementById('arc-picker');
-  container.innerHTML = '';
-  arcTypes.forEach(arc => {
-    const div = document.createElement('div');
-    div.className = `arc-chip px-4 py-3 rounded-2xl text-center text-sm cursor-pointer ${arc.name === currentArc.name ? 'active' : 'bg-neutral-800'}`;
-    div.innerHTML = `${arc.emoji} ${arc.name}`;
-    div.onclick = () => {
-      currentArc = arc;
-      renderArcPicker();
-    };
-    container.appendChild(div);
-  });
-}
+function sendToVoid() {
+  const recipient = document.getElementById('recipient').value;
+  const text = document.getElementById('message').value.trim();
 
-function saveScene() {
-  const text = document.getElementById('scene-input').value.trim();
-  if (!text) return;
+  if (!recipient || !text) {
+    alert("Choose who it's for and write something 🔥");
+    return;
+  }
 
-  const today = new Date().toISOString().split('T')[0];
+  const savageLevel = Math.floor(Math.random() * 10) + 1;
+  const catharsis = Math.floor(Math.random() * 40) + 60;
 
-  scenes.unshift({
-    date: today,
-    episode: scenes.length + 1,
-    scene: text,
-    arc: currentArc
+  messages.unshift({
+    date: new Date().toLocaleDateString('en-US', {month:'short', day:'numeric'}),
+    recipient,
+    text,
+    savage: savageLevel,
+    catharsis
   });
 
   saveData();
-  document.getElementById('scene-input').value = '';
-  showToast("Scene logged! 🎥");
-  renderArcs();
+  document.getElementById('message').value = '';
+  showToast("Sent to the void. You're free now ✨");
+
+  renderArchive();
   renderRecap();
 }
 
-function renderArcs() {
-  const container = document.getElementById('arc-list');
+function renderArchive() {
+  const container = document.getElementById('archive-list');
   container.innerHTML = '';
-  scenes.slice(0, 8).forEach(s => {
+
+  messages.forEach(msg => {
     const div = document.createElement('div');
-    div.className = 'bg-neutral-900 rounded-3xl p-5 flex gap-4';
+    div.className = 'message-card rounded-3xl p-6 mb-4';
     div.innerHTML = `
-      <div class="text-4xl">${s.arc.emoji}</div>
-      <div class="flex-1">
-        <p class="text-xs text-neutral-400">EP ${s.episode} • ${s.date}</p>
-        <p class="line-clamp-2 text-sm mt-1">${s.scene}</p>
-        <p class="text-xs mt-3 text-${s.arc.color.slice(1)}">${s.arc.name}</p>
+      <div class="flex justify-between text-xs text-neutral-400 mb-2">
+        <span>${msg.date} • ${msg.recipient}</span>
+        <span class="text-rose-400">${msg.savage}/10 savage</span>
       </div>
+      <p class="text-lg italic">"${msg.text}"</p>
+      <p class="text-xs text-emerald-400 mt-4">Catharsis: ${msg.catharsis}%</p>
     `;
     container.appendChild(div);
   });
 }
 
 function renderRecap() {
-  const container = document.getElementById('recap-content');
-  container.innerHTML = '';
-
-  if (scenes.length === 0) {
-    container.innerHTML = `<p class="text-neutral-400 text-center py-8">Log a few scenes to see your season recap...</p>`;
+  const container = document.getElementById('recap-stats');
+  if (messages.length === 0) {
+    container.innerHTML = `<p class="text-neutral-400">Log some unsent texts to see your monthly energy...</p>`;
     return;
   }
 
-  const arcCount = {};
-  scenes.forEach(s => arcCount[s.arc.name] = (arcCount[s.arc.name]||0) + 1);
+  const total = messages.length;
+  const avgSavage = Math.round(messages.reduce((a,m) => a + m.savage, 0) / total);
 
-  let html = `<p class="text-neutral-400 text-sm">This season so far...</p>`;
-  Object.keys(arcCount).forEach(arc => {
-    html += `<div class="flex justify-between mt-4"><span>${arc}</span><span class="font-bold">${arcCount[arc]} episodes</span></div>`;
-  });
-  container.innerHTML = html;
+  container.innerHTML = `
+    <div class="text-center">
+      <p class="text-6xl font-bold text-rose-400">${total}</p>
+      <p class="text-sm text-neutral-400">texts you didn't send</p>
+    </div>
+    <div class="mt-8 text-center">
+      <p class="text-4xl font-bold">${avgSavage}/10</p>
+      <p class="text-sm text-neutral-400">average savage level</p>
+    </div>
+  `;
 }
 
 function showToast(msg) {
   const toast = document.createElement('div');
-  toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#111;color:white;padding:12px 24px;border-radius:9999px;font-size:14px;z-index:9999;';
+  toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#111;color:white;padding:14px 28px;border-radius:9999px;font-size:15px;z-index:9999;';
   toast.textContent = msg;
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 2200);
@@ -101,16 +88,15 @@ function showToast(msg) {
 
 function switchTab(tab) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-  document.getElementById(['tab-today','tab-arcs','tab-recap'][tab]).classList.remove('hidden');
+  document.getElementById(['compose','archive','recap'][tab]).classList.remove('hidden');
 }
 
 function init() {
   loadData();
-  renderArcPicker();
-  renderArcs();
+  renderArchive();
   renderRecap();
   switchTab(0);
-  console.log('%cARC loaded – your life is now a series 🎬', 'color:#ef4444; font-weight:bold');
+  console.log('%cUnsent loaded – your secrets are safe here 🔥', 'color:#e11d48; font-weight:bold');
 }
 
 window.onload = init;
